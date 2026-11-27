@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "notes": "Each case: run the prompt with the input, once with the skill and once without. Grade hard_fail first (any hit = fail), then compare the two outputs blind against `expect`.",
+  "cases": [
+    {
+      "id": "proofread-vi-technical-notes",
+      "mode": "proofread",
+      "prompt": "Chỉ sửa diễn đạt, không đổi nội dung kỹ thuật hay số liệu.",
+      "input": "Kiểm tồn mỗi 300 s và gộp tồn theo NL, nên đây là mô hình nới lỏng. Kết quả phải qua replay chính xác. Lúc 10:00: 100 ứng viên, cả ba tầng OPTIMAL, 3 phương án qua replay, 0,74 s. \"OPTIMAL\" chỉ đúng với mô hình nới lỏng, không chứng minh tối ưu với referee.",
+      "expect": [
+        "Full sentences with subjects; 'tầng' rendered as optimization steps",
+        "OPTIMAL kept as an identifier and explained as a solver status",
+        "All values kept: 300 s, 100, 3, 0,74 s",
+        "The limitation (optimal only in the relaxed model) preserved",
+        "A change table follows the text"
+      ],
+      "hard_fail": [
+        "any number changed",
+        "limitation removed or weakened",
+        "OPTIMAL translated away"
+      ]
+    },
+    {
+      "id": "keep-established-english",
+      "mode": "proofread",
+      "prompt": "Proofread this Vietnamese paragraph for a DevOps team.",
+      "input": "Pipeline CI chạy unit test và build Docker image cho mỗi commit lên nhánh main. Nếu test fail, deploy lên staging sẽ bị chặn.",
+      "expect": [
+        "Paragraph left essentially unchanged: the English terms are the working vocabulary of the audience"
+      ],
+      "hard_fail": [
+        "translating CI, pipeline, commit, build, deploy or staging into awkward Vietnamese",
+        "rewriting a correct paragraph"
+      ]
+    },
+    {
+      "id": "unnatural-translation",
+      "mode": "proofread",
+      "prompt": "Sửa câu chữ cho tự nhiên.",
+      "input": "Việc thực hiện tiến hành kiểm tra được thực hiện bởi hệ thống mỗi ngày một lần. Điều đáng chú ý là sự thay đổi này mang tính đột phá trong việc nâng tầm hiệu quả.",
+      "expect": [
+        "Nominalizations and passive removed ('Hệ thống kiểm tra mỗi ngày một lần')",
+        "Inflated second sentence flagged or reduced to a plain claim; no invented magnitude"
+      ],
+      "hard_fail": [
+        "inventing a number for the improvement"
+      ]
+    },
+    {
+      "id": "math-depth-preserved",
+      "mode": "rewrite",
+      "prompt": "Make this section easier to read for engineers. Keep the math.",
+      "input": "Let x_i ∈ {0,1} select candidate i. We minimize Σ_t max(0, f_t − S_t) subject to S_t = S_0 + Σ_i a_{i,t} x_i − D_t and S_t ≤ C. The relaxation aggregates bins per material, so its optimum is a lower bound, not a certificate for the exact simulator.",
+      "expect": [
+        "Formulas unchanged",
+        "Lower-bound caveat kept",
+        "Clearer prose around the formulas, not fewer formulas"
+      ],
+      "hard_fail": [
+        "formula altered",
+        "caveat dropped",
+        "math replaced by vague prose"
+      ]
+    },
+    {
+      "id": "executive-version",
+      "mode": "author",
+      "prompt": "Turn these results into a 120-word update for the plant director, who must decide whether to start a 2-week pilot.",
+      "input": "Benchmark on synthetic shift data (3 scenarios, 5 s per solve). Mixer wait minutes: baseline 0/38.5/0, heuristic A 8.3/115.2/4.3, CP-SAT 0/78.5/0, beam search 0/32.8/0. Beam search used 12-13 transfers vs 25-29 for baseline. Data is synthetic; no operational validation yet.",
+      "expect": [
+        "Leads with the recommendation or decision needed",
+        "Says the data is synthetic",
+        "Uses only the numbers given",
+        "About 120 words"
+      ],
+      "hard_fail": [
+        "claims operational validation",
+        "invents savings or percentages not derivable from input",
+        "drops the synthetic caveat"
+      ]
+    },
+    {
+      "id": "colleague-email",
+      "mode": "author",
+      "prompt": "Viết email ngắn nhờ anh Nam (team data) gửi lại file tồn kho đầu ca ngày 16/10, cần trước thứ Sáu để chạy lại benchmark.",
+      "input": "",
+      "expect": [
+        "First line states the request",
+        "Deadline explicit",
+        "Natural, polite register with pronouns; not stiff"
+      ],
+      "hard_fail": [
+        "adding facts not given (file names, reasons beyond the prompt)"
+      ]
+    },
+    {
+      "id": "incomplete-benchmark",
+      "mode": "author",
+      "prompt": "Write the results section of the benchmark report.",
+      "input": "Runs completed: E0 and E1. E1b run crashed after 40% (log attached: solver timeout). Metrics for E0: wait 0 min, 12 transfers. E1: wait 32.8 min, 12 transfers.",
+      "expect": [
+        "Reports E0 and E1 only",
+        "States E1b did not complete and why",
+        "No E1b numbers"
+      ],
+      "hard_fail": [
+        "any E1b result invented",
+        "E1b silently omitted"
+      ]
+    },
+    {
+      "id": "creative-analysis-allowed",
+      "mode": "author",
+      "prompt": "Analyse why knowing the line restart time made results worse, and propose two improvements.",
+      "input": "When the restart time was known (12:45), the planner waited for the interrupted transfer instead of opening an alternative route; batches waited up to 27 minutes. When the restart was unknown, it opened the alternative route at 12:02 and no batch waited.",
+      "expect": [
+        "Offers a causal explanation labelled as inference",
+        "Two concrete proposals labelled as proposals"
+      ],
+      "hard_fail": [
+        "presenting proposals as implemented or tested"
+      ]
+    },
+    {
+      "id": "necessary-limitation",
+      "mode": "rewrite",
+      "prompt": "Make this shorter.",
+      "input": "The model reached MAE 41 s on the held-out week. This week contains no line stoppages, so the error during stoppages is unknown. The approval rule requires MAE below the baseline (58 s) and a named reviewer; the reviewer has not signed yet.",
+      "expect": [
+        "Shorter, but keeps: no stoppages in test week, unknown error under stoppages, not yet approved"
+      ],
+      "hard_fail": [
+        "dropping the stoppage limitation",
+        "implying approval"
+      ]
+    },
+    {
+      "id": "already-good",
+      "mode": "proofread",
+      "prompt": "Proofread.",
+      "input": "Mỗi lượt nạp ghi mã tuyến, khối lượng và giờ bắt đầu. Tuyến xác định nguồn, bin đích và nguyên liệu.",
+      "expect": [
+        "No changes, or at most trivial punctuation; says the text needs no edits"
+      ],
+      "hard_fail": [
+        "rewording correct sentences"
+      ]
+    },
+    {
+      "id": "proofread-only-scope",
+      "mode": "proofread",
+      "prompt": "Proofreading only. Do not restructure.",
+      "input": "## Results\nThe new cache are faster. It reduce p95 latency from 820ms to 140 ms. ## Method\nWe measured on staging over 3 days.",
+      "expect": [
+        "Grammar fixed ('is', 'reduces')",
+        "Section order kept even though Method after Results may be unusual",
+        "Inconsistent unit spacing (820ms vs 140 ms) fixed or flagged without changing values"
+      ],
+      "hard_fail": [
+        "reordering sections",
+        "adding new sections",
+        "changing 820 or 140"
+      ]
+    },
+    {
+      "id": "ambiguous-term",
+      "mode": "translate",
+      "prompt": "Translate into Vietnamese for plant operators.",
+      "input": "The batch gate holds the batch until all materials are available. Precision of the shortage alert was 0.9.",
+      "expect": [
+        "'batch gate' rendered by meaning (điều kiện bắt đầu mẻ), not 'cổng mẻ'",
+        "'precision' as the classification metric, explained briefly, not 'độ chính xác' without qualification"
+      ],
+      "hard_fail": [
+        "translating precision as accuracy without note"
+      ]
+    },
+    {
+      "id": "conflicting-sources",
+      "mode": "author",
+      "prompt": "Summarize the evaluation count for algorithm C at 10:00.",
+      "input": "Report v1 says C performed 196 evaluations at 10:00. Report v2 says 189. The run logs for that checkpoint are not available.",
+      "expect": [
+        "Presents both numbers and that logs are missing",
+        "Does not pick one"
+      ],
+      "hard_fail": [
+        "choosing one number as fact",
+        "averaging"
+      ]
+    },
+    {
+      "id": "cross-section-repetition",
+      "mode": "audit",
+      "prompt": "Audit this report outline for repetition.",
+      "input": "1. Summary: B wins because it uses fewer changeovers.\n2. Method: ...\n3. Results: B wins on changeovers (5 vs 7).\n4. Discussion: As shown, B wins because of fewer changeovers.\n5. Conclusion: In conclusion, B is best due to fewer changeovers.",
+      "expect": [
+        "Identifies the same claim in sections 1, 3, 4 and 5",
+        "Notes that 'best' over-claims (only changeovers differ)",
+        "Changes nothing (audit mode)"
+      ],
+      "hard_fail": [
+        "rewriting the report instead of auditing"
+      ]
+    },
+    {
+      "id": "report-to-slides",
+      "mode": "author",
+      "prompt": "Make 3 slide titles and one-line captions from this paragraph.",
+      "input": "In scenario E1, line 3 stopped from 12:00 to 12:45. Algorithm C kept mixer waiting to 32.8 minutes versus 115.2 for heuristic A and 78.5 for CP-SAT, while using 12 transfers. In E0 without events, CP-SAT and C both had zero waiting.",
+      "expect": [
+        "Titles state messages, not topics",
+        "No pasted paragraphs",
+        "Numbers exactly as given"
+      ],
+      "hard_fail": [
+        "changed numbers",
+        "topic-only titles like 'Results'"
+      ]
+    },
+    {
+      "id": "unfamiliar-domain-term",
+      "mode": "proofread",
+      "prompt": "Sửa diễn đạt đoạn sau (lĩnh vực an toàn sinh học trang trại).",
+      "input": "Khu vực đệm phải được khử trùng trước khi xe vào vùng sạch. Downtime của trạm phun được ghi lại theo ca.",
+      "expect": [
+        "Does not 'correct' domain terms (khu vực đệm, vùng sạch) without evidence",
+        "May leave 'downtime' or render it as 'thời gian ngừng' consistently"
+      ],
+      "hard_fail": [
+        "replacing domain terms with guesses"
+      ]
+    },
+    {
+      "id": "regression-vhsx-report",
+      "mode": "proofread",
+      "prompt": "Chỉ biên tập ngôn ngữ và thuật ngữ. Giữ nguyên số liệu, công thức, cấu trúc. Trả kèm bảng thay đổi.",
+      "input": "Scenario: thứ duy nhất solver nhìn thấy. Số được lưu dạng phân số chính xác (chuỗi), không làm tròn. Mọi solver bị chấm bằng cùng một hàm replay(). Nó không bước theo phút: nó nhảy từ sự kiện này sang sự kiện khác, nên không có gì lọt giữa hai mốc. C-lookahead: beam = 3 phương án tốt nhất từ hạt giống của A; láng giềng của một lượt: xoá, dời ±300 s; giữ 3 cái có sort_key nhỏ nhất. Ví dụ thật: bốn phương án cho ảnh chụp 10:00. Cổng mẻ chạy trên kế hoạch lúc 10:00, rồi ghim lại. Lõi không biết mẻ hay mixer. Hiệu chỉnh bằng dữ liệu nghiên cứu, không phải cấu hình đã duyệt.",
+      "expect": [
+        "Calques (hạt giống, láng giềng, ảnh chụp), slang (lọt, ghim, cái), personification (nhìn thấy, không biết) and fragments fixed in context",
+        "Identifiers kept: replay(), sort_key, C-lookahead, Scenario",
+        "All values kept: 3, 300 s, 10:00",
+        "'Ví dụ thật' not presented as operational data",
+        "A change table follows"
+      ],
+      "hard_fail": [
+        "any number changed",
+        "identifier translated or removed",
+        "technical meaning changed",
+        "sentences added that introduce new claims"
+      ]
+    }
+  ]
+}
