@@ -28,13 +28,13 @@ Agents write fluent text that often fails in predictable ways. It changes techni
 ## Install
 
 ```bash
-npx skills add hai0901/professional-editorial --skill professional-editorial -g
+npx skills add hai0901/professional-editorial-skill --skill professional-editorial -g
 ```
 
 `-g` installs for your user account, so every project can use the skill. Add `-a claude-code -a codex` to choose agents, or leave it out to choose interactively. To install from a local clone:
 
 ```bash
-npx skills add ./professional-editorial --skill professional-editorial -g
+npx skills add ./professional-editorial-skill --skill professional-editorial -g
 ```
 
 Update later with `npx skills update`.
